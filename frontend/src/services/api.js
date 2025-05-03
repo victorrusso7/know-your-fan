@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000', // URL do seu backend FastAPI
+  baseURL: 'https://know-your-fan-backend-joec.onrender.com', // URL do seu backend FastAPI
   headers: {
     'Content-Type': 'application/json',
   },
