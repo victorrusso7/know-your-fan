@@ -17,7 +17,7 @@ router.post('/', upload.single('documento'), (req, res) => {
   res.status(200).json({
     message: 'Upload feito com sucesso!',
     file: {
-      path: `http://localhost:5000/uploads/${req.file.filename}`
+      path: `https://know-your-fan-backend-joec.onrender.com/uploads/${req.file.filename}`
     }
   })
 })
