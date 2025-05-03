@@ -8,13 +8,15 @@ from PIL import Image
 import pytesseract
 import io
 
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
 # 🚀 FastAPI app
 app = FastAPI()
 
 # 🚀 Middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # substitua por seu domínio se necessário
+    allow_origins=["*"],  # ou substitua por ["https://know-your-fan-eta.vercel.app"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
