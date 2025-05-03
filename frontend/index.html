@@ -71,9 +71,7 @@
         <input type="text" id="events" placeholder="Memória com a FURIA" class="input-field w-full p-3 rounded-lg" required>
         <input type="text" id="products" placeholder="Produtos que comprou" class="input-field w-full p-3 rounded-lg" required>
         <input type="text" id="twitter" placeholder="@seuusuario" class="input-field w-full p-3 rounded-lg" required>
-
         <input type="file" id="document" name="document" class="input-field w-full text-sm p-2 rounded-lg bg-black file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-500 file:text-black">
-
         <button type="submit" class="btn-gold w-full py-3 px-6 rounded-lg text-lg font-semibold">ENVIAR</button>
       </form>
     </div>
@@ -98,6 +96,7 @@
     <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="FURIA Logo" class="h-16 md:h-20">
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('fan-form');
@@ -117,33 +116,44 @@
         const link = document.getElementById('twitter').value;
         const file = document.getElementById('document').files[0];
 
-        const formData = new FormData();
-        formData.append('document', file);
+        let ocrText = '';
+
+        if (file) {
+          try {
+            const { data: { text } } = await Tesseract.recognize(file, 'por');
+            ocrText = text;
+          } catch (err) {
+            console.error("Erro no OCR:", err);
+          }
+        }
 
         try {
-          // OCR upload
-          await fetch('https://know-your-fan-backend-joec.onrender.com/ocr', {
-            method: 'POST',
-            body: formData
-          });
-
-          // Validação IA
           const validar = await fetch('https://know-your-fan-backend-joec.onrender.com/validar_social', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, memoria, eventos, link })
+            body: JSON.stringify({
+              nome,
+              memoria: memoria + ' ' + ocrText,
+              eventos,
+              link
+            })
           });
+
           const { resposta } = await validar.json();
           aiResult.textContent = resposta;
 
-          // Recomendação
           const recomendar = await fetch('https://know-your-fan-backend-joec.onrender.com/recomendar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jogos: '', jogadores: '', eventos: memoria, produtos: eventos })
+            body: JSON.stringify({
+              jogos: '',
+              jogadores: '',
+              eventos: memoria,
+              produtos: eventos
+            })
           });
-          const { recomendacoes } = await recomendar.json();
 
+          const { recomendacoes } = await recomendar.json();
           recommendationsList.innerHTML = recomendacoes.split('\n').map(r =>
             `<li class="flex items-center"><span class="mr-2">🔥</span>${r}</li>`
           ).join('');
@@ -152,7 +162,7 @@
           formSection.classList.add('hidden');
           thankYouSection.classList.remove('hidden');
         } catch (err) {
-          aiResult.textContent = 'Erro ao processar. Verifique o backend.';
+          aiResult.textContent = 'Erro ao processar. Verifique sua conexão ou o backend.';
           console.error(err);
         }
       });
