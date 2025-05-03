@@ -33,7 +33,7 @@ export default function RedesSociais() {
       setResposta(data.resposta)
 
       // Salva no banco via backend Node
-      await axios.post('https://know-your-fan-backend-joec.onrender.com/registro', {
+      await axios.post('https://know-your-fan-4bk0.onrender.com/registro', {
         ...dados,
         resposta: data.resposta
       })

@@ -135,7 +135,7 @@
         }
 
         try {
-          const validar = await fetch('https://know-your-fan-backend-joec.onrender.com/validar_social', {
+          const validar = await fetch('https://know-your-fan-4bk0.onrender.com/validar_social', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -149,7 +149,7 @@
           const { resposta } = await validar.json();
           aiResult.textContent = resposta;
 
-          const recomendar = await fetch('https://know-your-fan-backend-joec.onrender.com/recomendar', {
+          const recomendar = await fetch('https://know-your-fan-4bk0.onrender.com/recomendar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

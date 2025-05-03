@@ -23,7 +23,7 @@ export default function FormKnowYourFan() {
 
     try {
       // Validação
-      const res = await fetch('https://know-your-fan-backend-joec.onrender.com/validar_social', {
+      const res = await fetch('https://know-your-fan-4bk0.onrender.com/validar_social', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -37,7 +37,7 @@ export default function FormKnowYourFan() {
       setRespostaIA(data.resposta)
 
       // Recomendação
-      const rec = await fetch('https://know-your-fan-backend-joec.onrender.com/recomendar', {
+      const rec = await fetch('https://know-your-fan-4bk0.onrender.com/recomendar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
