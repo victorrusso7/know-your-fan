@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Know Your Fan - FURIA Esports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      color: #e5e5e5;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .glass-card {
+      background: rgba(15, 15, 15, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    .gold-text { color: #FFD700; }
+    .btn-gold {
+      background: linear-gradient(45deg, #FFD700 0%, #FFA500 100%);
+      color: #0a0a0a;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+    .input-field {
+      background: rgba(30, 30, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .input-field:focus {
+      border-color: #FFD700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+      outline: none;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .logo-glow {
+      filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center py-12 px-4">
+
+  <div class="glass-card w-full max-w-3xl rounded-2xl p-8 md:p-10 mb-12">
+    <div id="form-section">
+      <h1 class="text-4xl font-bold text-center mb-6 gold-text font-['Orbitron']">KNOW YOUR FAN</h1>
+      <form id="fan-form" class="space-y-6">
+        <input type="text" id="fullname" placeholder="Nome completo" class="input-field w-full p-3 rounded-lg" required>
+        <input type="text" id="events" placeholder="Memória com a FURIA" class="input-field w-full p-3 rounded-lg" required>
+        <input type="text" id="products" placeholder="Produtos que comprou" class="input-field w-full p-3 rounded-lg" required>
+        <input type="text" id="twitter" placeholder="@seuusuario" class="input-field w-full p-3 rounded-lg" required>
+
+        <input type="file" id="document" name="document" class="input-field w-full text-sm p-2 rounded-lg bg-black file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-500 file:text-black">
+
+        <button type="submit" class="btn-gold w-full py-3 px-6 rounded-lg text-lg font-semibold">ENVIAR</button>
+      </form>
+    </div>
+
+    <div id="thank-you-section" class="hidden fade-in">
+      <h2 class="text-3xl font-bold text-center mb-6 gold-text">🎉 Obrigado, <span id="user-name"></span>!</h2>
+      <div class="bg-gray-800 rounded-xl p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 gold-text">Resultado da IA:</h3>
+        <p id="ai-result" class="text-gray-300">Processando...</p>
+      </div>
+      <div class="bg-gray-800 rounded-xl p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 gold-text">Recomendações personalizadas:</h3>
+        <ul id="recommendations" class="text-gray-300 space-y-2"></ul>
+      </div>
+      <div class="text-center">
+        <button id="back-to-form" class="btn-gold px-6 py-3 rounded-lg font-medium">Preencher novamente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="logo-glow mt-8">
+    <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="FURIA Logo" class="h-16 md:h-20">
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('fan-form');
+      const formSection = document.getElementById('form-section');
+      const thankYouSection = document.getElementById('thank-you-section');
+      const userNameDisplay = document.getElementById('user-name');
+      const aiResult = document.getElementById('ai-result');
+      const recommendationsList = document.getElementById('recommendations');
+      const backToFormBtn = document.getElementById('back-to-form');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nome = document.getElementById('fullname').value;
+        const memoria = document.getElementById('events').value;
+        const eventos = document.getElementById('products').value;
+        const link = document.getElementById('twitter').value;
+        const file = document.getElementById('document').files[0];
+
+        const formData = new FormData();
+        formData.append('document', file);
+
+        try {
+          // OCR upload
+          await fetch('http://localhost:3001/ocr', {
+            method: 'POST',
+            body: formData
+          });
+
+          // Validação IA
+          const validar = await fetch('http://localhost:8000/validar_social', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, memoria, eventos, link })
+          });
+          const { resposta } = await validar.json();
+          aiResult.textContent = resposta;
+
+          // Recomendação
+          const recomendar = await fetch('http://localhost:8000/recomendar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jogos: '', jogadores: '', eventos: memoria, produtos: eventos })
+          });
+          const { recomendacoes } = await recomendar.json();
+
+          recommendationsList.innerHTML = recomendacoes.split('\n').map(r =>
+            `<li class="flex items-center"><span class="mr-2">🔥</span>${r}</li>`
+          ).join('');
+
+          userNameDisplay.textContent = nome.split(' ')[0];
+          formSection.classList.add('hidden');
+          thankYouSection.classList.remove('hidden');
+        } catch (err) {
+          aiResult.textContent = 'Erro ao processar. Verifique o backend.';
+          console.error(err);
+        }
+      });
+
+      backToFormBtn.addEventListener('click', () => {
+        thankYouSection.classList.add('hidden');
+        formSection.classList.remove('hidden');
+        form.reset();
+        recommendationsList.innerHTML = '';
+        aiResult.textContent = '';
+      });
+    });
+  </script>
+</body>
+</html>
