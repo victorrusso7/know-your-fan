@@ -10,12 +10,16 @@ import io
 
 app = FastAPI()
 
+# Caminho do Tesseract
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 # Middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://know-your-fan-eta.vercel.app",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,27 +39,35 @@ class PerfilSocial(BaseModel):
 
 @app.post("/validar_social")
 def validar_social(perfil: PerfilSocial):
-    texto = analisar_perfil(perfil.link, perfil.nome, perfil.memoria, perfil.eventos)
+    try:
+        texto = analisar_perfil(perfil.link, perfil.nome, perfil.memoria, perfil.eventos)
 
-    with Session(engine) as session:
-        record = SocialValidation(
-            nome=perfil.nome,
-            link=perfil.link,
-            memoria=perfil.memoria,
-            eventos=perfil.eventos,
-            resposta=texto
-        )
-        session.add(record)
-        session.commit()
-        session.refresh(record)
+        with Session(engine) as session:
+            record = SocialValidation(
+                nome=perfil.nome,
+                link=perfil.link,
+                memoria=perfil.memoria,
+                eventos=perfil.eventos,
+                resposta=texto
+            )
+            session.add(record)
+            session.commit()
+            session.refresh(record)
 
-    return {"resposta": texto, "id": record.id}
+        return {"resposta": texto, "id": record.id}
+    except Exception as e:
+        print("Erro em /validar_social:", e)
+        return {"erro": str(e)}
 
 @app.get("/validacoes")
 def listar_validacoes():
-    with Session(engine) as session:
-        results = session.exec(select(SocialValidation).order_by(SocialValidation.criado_em.desc()))
-        return results.all()
+    try:
+        with Session(engine) as session:
+            results = session.exec(select(SocialValidation).order_by(SocialValidation.criado_em.desc()))
+            return results.all()
+    except Exception as e:
+        print("Erro em /validacoes:", e)
+        return {"erro": str(e)}
 
 # Dados para recomendação
 class Preferencias(BaseModel):
@@ -66,18 +78,26 @@ class Preferencias(BaseModel):
 
 @app.post("/recomendar")
 def recomendar(preferencias: Preferencias):
-    resposta = gerar_recomendacoes(
-        preferencias.jogos,
-        preferencias.jogadores,
-        preferencias.eventos,
-        preferencias.produtos
-    )
-    return {"recomendacoes": resposta}
+    try:
+        resposta = gerar_recomendacoes(
+            preferencias.jogos,
+            preferencias.jogadores,
+            preferencias.eventos,
+            preferencias.produtos
+        )
+        return {"recomendacoes": resposta}
+    except Exception as e:
+        print("Erro em /recomendar:", e)
+        return {"erro": str(e)}
 
 # OCR para upload de imagem com texto
 @app.post("/ocr")
 async def ocr_document(document: UploadFile = File(...)):
-    content = await document.read()
-    image = Image.open(io.BytesIO(content))
-    texto_extraido = pytesseract.image_to_string(image)
-    return {"texto": texto_extraido}
+    try:
+        content = await document.read()
+        image = Image.open(io.BytesIO(content))
+        texto_extraido = pytesseract.image_to_string(image)
+        return {"texto": texto_extraido}
+    except Exception as e:
+        print("Erro em /ocr:", e)
+        return {"erro": str(e)}
