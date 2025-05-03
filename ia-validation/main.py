@@ -8,12 +8,13 @@ from PIL import Image
 import pytesseract
 import io
 
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
-
-# 🚀 FastAPI app
+# 🚀 Inicialização do app FastAPI
 app = FastAPI()
 
-# 🚀 Middleware CORS
+# 🔧 Caminho do executável do Tesseract (ajustado para ambientes Linux/Render)
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+# 🌐 Middleware CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # ou substitua por ["https://know-your-fan-eta.vercel.app"]
@@ -22,12 +23,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 🚀 Banco de dados
+# 💾 Configuração do banco de dados SQLite
 DATABASE_URL = "sqlite:///./validations.db"
 engine = create_engine(DATABASE_URL, echo=True)
 SQLModel.metadata.create_all(engine)
 
-# 🚀 Modelo de dados para validação social
+# 📦 Modelo para o POST /validar_social
 class PerfilSocial(BaseModel):
     nome: str
     link: str
@@ -52,13 +53,14 @@ def validar_social(perfil: PerfilSocial):
 
     return {"resposta": texto, "id": record.id}
 
+# 🔍 GET /validacoes
 @app.get("/validacoes")
 def listar_validacoes():
     with Session(engine) as session:
         results = session.exec(select(SocialValidation).order_by(SocialValidation.criado_em.desc()))
         return results.all()
 
-# ✅ NOVO: modelo para recomendação
+# 💡 Modelo para POST /recomendar
 class Preferencias(BaseModel):
     jogos: str
     jogadores: str
@@ -75,10 +77,13 @@ def recomendar(preferencias: Preferencias):
     )
     return {"recomendacoes": resposta}
 
-# ✅ NOVO: OCR para upload de imagem com texto
+# 📄 OCR via Upload de Imagem
 @app.post("/ocr")
 async def ocr_document(document: UploadFile = File(...)):
-    content = await document.read()
-    image = Image.open(io.BytesIO(content))
-    texto_extraido = pytesseract.image_to_string(image)
-    return {"texto": texto_extraido}
+    try:
+        content = await document.read()
+        image = Image.open(io.BytesIO(content)).convert('RGB')  # força RGB para evitar erros
+        texto_extraido = pytesseract.image_to_string(image, lang='por')  # usa OCR em português
+        return {"texto": texto_extraido}
+    except Exception as e:
+        return {"erro": f"Falha ao processar OCR: {str(e)}"}
