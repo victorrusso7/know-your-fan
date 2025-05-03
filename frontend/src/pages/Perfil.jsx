@@ -11,7 +11,7 @@ export default function Perfil() {
   useEffect(() => {
     const fetchRecomendacoes = async () => {
       try {
-        const { data } = await axios.post('http://localhost:8000/recomendar', {
+        const { data } = await axios.post('https://know-your-fan-backend-joec.onrender.com/recomendar', {
           jogos: dados.jogos || '',
           jogadores: dados.jogadores || '',
           eventos: dados.eventos || '',
