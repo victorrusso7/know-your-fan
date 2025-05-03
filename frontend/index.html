@@ -96,7 +96,6 @@
     <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" alt="FURIA Logo" class="h-16 md:h-20">
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('fan-form');
@@ -120,10 +119,18 @@
 
         if (file) {
           try {
-            const { data: { text } } = await Tesseract.recognize(file, 'por');
-            ocrText = text;
+            const formData = new FormData();
+            formData.append('document', file);
+
+            const ocrResponse = await fetch('https://know-your-fan-4bk0.onrender.com/ocr', {
+              method: 'POST',
+              body: formData
+            });
+
+            const result = await ocrResponse.json();
+            ocrText = result.text || '';
           } catch (err) {
-            console.error("Erro no OCR:", err);
+            console.error("Erro no OCR via backend:", err);
           }
         }
 
