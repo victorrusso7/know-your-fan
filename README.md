@@ -24,7 +24,7 @@ A proposta é simples e poderosa: analisar perfis sociais por IA, extrair dados 
 
 ## 📹 Vídeo Demonstrativo
 
-> *(O link será adicionado aqui após publicação no YouTube)*  
+> *https://www.youtube.com/watch?v=MIO_U4eMipU&ab_channel=Victorrusso*  
 O vídeo mostra o funcionamento completo da aplicação, do upload à resposta gerada.
 
 ---
