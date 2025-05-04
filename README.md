@@ -16,7 +16,7 @@ A proposta é simples e poderosa: analisar perfis sociais por IA, extrair dados 
 
 ---
 
-## 🔗 Acesse a Demonstração ao Vivo
+## 🔗 Acesse a Demonstração no Vídeo
 
 👉 [![Assista ao vídeo](https://img.youtube.com/vi/MIO_U4eMipU/hqdefault.jpg)](https://www.youtube.com/watch?v=MIO_U4eMipU)
 
