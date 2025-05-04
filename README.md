@@ -16,15 +16,15 @@ A proposta é simples e poderosa: analisar perfis sociais por IA, extrair dados 
 
 ---
 
-## 🔗 Acesse a Demonstração no Vídeo
+## 🔗 Acesse a Demonstração ao Vivo
 
-👉 [![Assista ao vídeo](https://img.youtube.com/vi/MIO_U4eMipU/hqdefault.jpg)](https://www.youtube.com/watch?v=MIO_U4eMipU)
+👉 [Clique aqui para testar](https://know-your-fan-eta.vercel.app)
 
 ---
 
 ## 📹 Vídeo Demonstrativo
 
-> *https://www.youtube.com/watch?v=MIO_U4eMipU&ab_channel=Victorrusso*  
+👉 [![Assista ao vídeo](https://img.youtube.com/vi/MIO_U4eMipU/hqdefault.jpg)](https://www.youtube.com/watch?v=MIO_U4eMipU) 
 O vídeo mostra o funcionamento completo da aplicação, do upload à resposta gerada.
 
 ---
